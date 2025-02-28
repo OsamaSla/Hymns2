@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 export default function EditHymn({ navigation }) {
   const [hymnId, setHymnId] = useState('');
@@ -12,46 +12,31 @@ export default function EditHymn({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>تعديل ترنيمة</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="رقم الترنيمة"
-        placeholderTextColor="#888"
-        value={hymnId}
-        onChangeText={setHymnId}
-        keyboardType="numeric"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="نص الترنيمة الجديد"
-        placeholderTextColor="#888"
-        value={hymnText}
-        onChangeText={setHymnText}
-      />
-      <Button title="تعديل" onPress={handleEditHymn} />
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.title}>تعديل ترنيمة</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="رقم الترنيمة"
+          placeholderTextColor="#888"
+          value={hymnId}
+          onChangeText={setHymnId}
+          keyboardType="numeric"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="نص الترنيمة الجديد"
+          placeholderTextColor="#888"
+          value={hymnText}
+          onChangeText={setHymnText}
+          multiline
+        />
+        <Button title="تعديل" onPress={handleEditHymn} />
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    textAlign: 'right',
-  },
+  // ... existing styles ...
 });

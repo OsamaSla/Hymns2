@@ -1,28 +1,40 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
-export default function DeleteHymn({ navigation }) {
+export default function DeleteHymn({ navigation, route }) {
+  const { existingHymns = [], deleteHymn } = route.params || {};
   const [hymnId, setHymnId] = useState('');
 
   const handleDeleteHymn = () => {
-    // Add your logic to delete the hymn
-    console.log('Deleting hymn:', hymnId);
+    const hymnNumber = parseInt(hymnId, 10);
+    if (!existingHymns.some(hymn => hymn.id === hymnNumber)) {
+      Alert.alert('Invalid Hymn ID', 'This hymn ID does not exist.');
+      return;
+    }
+    deleteHymn(hymnNumber);
     navigation.goBack();
   };
 
+  const handleIdChange = (text) => {
+    const numericText = text.replace(/[^0-9]/g, '');
+    setHymnId(numericText);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>حذف ترنيمة</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="رقم الترنيمة"
-        placeholderTextColor="#888"
-        value={hymnId}
-        onChangeText={setHymnId}
-        keyboardType="numeric"
-      />
-      <Button title="حذف" onPress={handleDeleteHymn} />
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Text style={styles.title}>حذف ترنيمة</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="رقم الترنيمة"
+          placeholderTextColor="#888"
+          value={hymnId}
+          onChangeText={handleIdChange}
+          keyboardType="numeric"
+        />
+        <Button title="حذف" onPress={handleDeleteHymn} />
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 

@@ -1,14 +1,39 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 export default function EditPage({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>تعديل</Text>
-      <Button title="إضافة ترنيمة" onPress={() => navigation.navigate('AddHymn')} />
-      <Button title="إضافة ترجمة" onPress={() => navigation.navigate('AddTranslation')} />
-      <Button title="تعديل ترنيمة" onPress={() => navigation.navigate('EditHymn')} />
-      <Button title="حذف ترنيمة" onPress={() => navigation.navigate('DeleteHymn')} />
+      <Text style={styles.title}></Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={() => navigation.navigate('AddHymn')}
+        >
+          <Text style={styles.buttonText}>إضافة ترنيمة</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={() => navigation.navigate('AddTranslation')}
+        >
+          <Text style={styles.buttonText}>إضافة ترجمة</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={() => navigation.navigate('EditHymn')}
+        >
+          <Text style={styles.buttonText}>تعديل ترنيمة</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={() => navigation.navigate('DeleteHymn')}
+        >
+          <Text style={styles.buttonText}>حذف ترنيمة</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -22,7 +47,25 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 30,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    alignItems: 'stretch',
+    width: '100%',
+    paddingHorizontal: 20,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
     textAlign: 'center',
   },
 });

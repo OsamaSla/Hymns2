@@ -1,20 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, Modal, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+
+const initialHymns = [
+  {
+    "id": 1,
+    "text": "نعمة مذهلة",
+    "content": "نعمة مذهلة! ما أحلى الصوت الذي أنقذ بائسًا مثلي. كنت ضالًا والآن تم العثور علي؛ كنت أعمى، والآن أرى."
+  },
+  // ... rest of the hymns array ...
+];
 
 export default function SearchPage() {
-  const [hymns, setHymns] = useState([]);
+  const [hymns, setHymns] = useState(initialHymns);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchNumber, setSearchNumber] = useState('');
-  const [sortBy, setSortBy] = useState('name'); // 'name' or 'number'
+  const [sortBy, setSortBy] = useState('name');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedHymn, setSelectedHymn] = useState(null);
 
-  useEffect(() => {
-    fetchHymns();
-  }, []);
+  const navigation = useNavigation();
 
-  const fetchHymns = async () => {
-    const response = await axios.get('http://localhost:3001/api/hymns');
-    setHymns(response.data);
+  const navigateToAddHymn = () => {
+    navigation.navigate('AddHymn', { existingHymns: hymns, addHymn });
+  };
+
+  const navigateToDeleteHymn = () => {
+    navigation.navigate('DeleteHymn', { existingHymns: hymns, deleteHymn });
+  };
+
+  const addHymn = (newHymn) => {
+    setHymns([...hymns, newHymn]);
+  };
+
+  const deleteHymn = (hymnId) => {
+    setHymns(hymns.filter(hymn => hymn.id !== hymnId));
   };
 
   const handleSearchName = (text) => {
@@ -25,42 +45,92 @@ export default function SearchPage() {
     setSearchNumber(text);
   };
 
+  const handleEditHymn = (hymn) => {
+    setSelectedHymn(hymn);
+    setModalVisible(true);
+  };
+
+  const handleSaveHymn = () => {
+    // Implement save functionality here
+    setModalVisible(false);
+    setSelectedHymn(null);
+  };
+
   const sortedHymns = hymns
     .filter(hymn => searchTerm ? hymn.text.includes(searchTerm) : true)
     .filter(hymn => searchNumber ? hymn.id.toString().includes(searchNumber) : true)
     .sort((a, b) => sortBy === 'name' ? a.text.localeCompare(b.text) : a.id - b.id);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>ابحث عن الترنيمة</Text>
-      <TextInput
-        style={styles.nameInput}
-        placeholder="ابحث عن اسم الترنيمة"
-        placeholderTextColor="#888"
-        onChangeText={handleSearchName}
-      />
-      <TextInput
-        style={styles.numberInput}
-        placeholder="ابحث رقم الترنيمة"
-        placeholderTextColor="#888"
-        keyboardType="numeric"
-        maxLength={4}
-        onChangeText={handleSearchNumber}
-      />
-      <View style={styles.sortButtons}>
-        <Button title="ترتيب أبجدي" onPress={() => setSortBy('name')} />
-        <Button title="ترتيب حسب الرقم" onPress={() => setSortBy('number')} />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <View style={styles.container}>
+        <Text style={styles.title}>ابحث عن الترنيمة</Text>
+        <TextInput
+          style={styles.nameInput}
+          placeholder="ابحث عن اسم الترنيمة"
+          placeholderTextColor="#888"
+          value={searchTerm}
+          onChangeText={handleSearchName}
+        />
+        <TextInput
+          style={styles.numberInput}
+          placeholder="ابحث رقم الترنيمة"
+          placeholderTextColor="#888"
+          keyboardType="numeric"
+          maxLength={4}
+          value={searchNumber}
+          onChangeText={handleSearchNumber}
+        />
+        <View style={styles.sortButtons}>
+          <Button title="ترتيب أبجدي" onPress={() => setSortBy('name')} />
+          <Button title="ترتيب حسب الرقم" onPress={() => setSortBy('number')} />
+        </View>
+        <FlatList
+          data={sortedHymns}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => handleEditHymn(item)}>
+              <View style={styles.hymnItem}>
+                <Text style={styles.hymnText}>{item.id} - {item.text}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+        <Button title="Add Hymn" onPress={navigateToAddHymn} />
+        <Button title="Delete Hymn" onPress={navigateToDeleteHymn} />
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>تعديل الترنيمة</Text>
+              {selectedHymn && (
+                <>
+                  <TextInput
+                    style={styles.modalInput}
+                    value={selectedHymn.text}
+                    onChangeText={(text) => setSelectedHymn({ ...selectedHymn, text })}
+                  />
+                  <TextInput
+                    style={[styles.modalInput, styles.modalTextarea]}
+                    value={selectedHymn.content}
+                    onChangeText={(content) => setSelectedHymn({ ...selectedHymn, content })}
+                    multiline
+                  />
+                  <Button title="حفظ" onPress={handleSaveHymn} />
+                  <Button title="إلغاء" onPress={() => setModalVisible(false)} />
+                </>
+              )}
+            </View>
+          </TouchableWithoutFeedback>
+        </Modal>
       </View>
-      <FlatList
-        data={sortedHymns}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.hymnItem}>
-            <Text>{item.id} - {item.text}</Text>
-          </View>
-        )}
-      />
-    </View>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -105,5 +175,41 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+  },
+  hymnText: {
+    textAlign: 'right',
+  },
+  modalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 22,
+    backgroundColor: 'white',
+    padding: 35,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 15,
+    textAlign: 'center',
+    fontSize: 20,
+  },
+  modalInput: {
+    height: 40,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+    width: '100%',
+    textAlign: 'right',
+  },
+  modalTextarea: {
+    height: 100,
   },
 });

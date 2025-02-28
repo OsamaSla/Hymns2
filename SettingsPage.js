@@ -19,7 +19,10 @@ export default function SettingsPage({ toggleTheme, changeFont, changeFontSize }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>الإعدادات</Text>
+      {/* Title */}
+      <Text style={styles.title}>إعدادات</Text>
+
+      {/* Font Selection Section */}
       <View style={styles.section}>
         <Text style={styles.label}>اختر الخط</Text>
         <Picker
@@ -27,12 +30,15 @@ export default function SettingsPage({ toggleTheme, changeFont, changeFontSize }
           style={styles.picker}
           onValueChange={handleFontChange}
         >
-          <Picker.Item label="الخط الافتراضي" value="default" />
-          <Picker.Item label="Amiri" value="amiri" />
-          <Picker.Item label="Scheherazade" value="scheherazade" />
-          <Picker.Item label="Noto Naskh Arabic" value="noto-naskh-arabic" />
-          <Picker.Item label="Cairo" value="cairo" />
+          <Picker.Item label="Amiri" value="amiri" color="#000" />
+          <Picker.Item label="Scheherazade" value="scheherazade" color="#000" />
+          <Picker.Item label="Noto Naskh Arabic" value="noto-naskh-arabic" color="#000" />
+          <Picker.Item label="Cairo" value="cairo" color="#000" />
         </Picker>
+      </View>
+
+      {/* Font Size Section */}
+      <View style={styles.section}>
         <Text style={styles.label}>حجم الخط</Text>
         <Slider
           style={styles.slider}
@@ -44,6 +50,8 @@ export default function SettingsPage({ toggleTheme, changeFont, changeFontSize }
         />
         <Text style={styles.fontSizeValue}>{fontSize}</Text>
       </View>
+
+      {/* Theme Toggle Section */}
       <View style={styles.section}>
         <Text style={styles.label}>اختر وضع الشاشة</Text>
         <Button title="الوضع الداكن / الوضع الفاتح" onPress={toggleTheme} />
@@ -61,27 +69,32 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
     textAlign: 'center',
   },
   section: {
-    marginBottom: 20,
+    marginBottom: 20, // Reduced marginBottom
   },
   label: {
     fontSize: 18,
-    marginBottom: 10,
+    marginBottom: 5, // Reduced marginBottom to close the gap
+    textAlign: 'right', // Align text to the right for RTL
+    color: '#000', // Darker color for label
   },
   picker: {
-    height: 50,
+    height: 150, // Adjusted height
     width: '100%',
+    marginTop: 0, // Removed marginTop to close the gap
+    marginBottom: 10,
   },
   slider: {
     width: '100%',
-    height: 40,
+    height: 40, // Increased height
   },
   fontSizeValue: {
     textAlign: 'center',
-    marginTop: 10,
-    fontSize: 16,
+    marginTop: 5,
+    fontSize: 24,
+    color: '#000', // Darker color for font size value
   },
 });
