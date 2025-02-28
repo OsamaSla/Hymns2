@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import hymnsData from './hymnsData.json';
 
 export default function DeleteHymn({ navigation, route }) {
   const { existingHymns = [], deleteHymn } = route.params || {};
